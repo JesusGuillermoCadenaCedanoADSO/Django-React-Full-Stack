@@ -173,4 +173,7 @@ CORS_ALLOW_CREDENTIALS=True
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+CORS_ALLOWED_ORIGINS = [
+    "https://django-react-full-stack-front-v1.onrender.com",
+]
 
