@@ -6,7 +6,9 @@ services:
     plan: free
     runtime: python-3.11
     buildCommand: cd backend && pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput
-    startCommand: cd backend && gunicorn backend.wsgi:application --bind 0.0.0.0:10000
+    # Use Render's $PORT and ensure Gunicorn runs with the Django project folder on PYTHONPATH
+    # --chdir backend ensures the working directory contains manage.py and the inner 'backend' package
+    startCommand: gunicorn backend.wsgi:application --chdir backend --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
