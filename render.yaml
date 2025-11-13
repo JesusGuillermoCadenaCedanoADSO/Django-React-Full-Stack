@@ -19,4 +19,13 @@ services:
     region: oregon
     plan: free
     dockerfilePath: ./frontend/Dockerfile
-
+  - type: static
+    name: react-frontend-static
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd frontend && npm ci && npm run build
+    publishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: "https://django-react-full-stack-v1.onrender.com/"
