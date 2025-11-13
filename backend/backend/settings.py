@@ -108,23 +108,23 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Usar PostgreSQL si DATABASE_URL está disponible (Render), sino SQLite para desarrollo
+if os.getenv('DATABASE_URL'):
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.getenv('DB_NAME'),
-#         'USER':os.getenv('DB_USER'),
-#         'PASSWORD':os.getenv('DB_PWD'),
-#         'HOST':os.getenv('DB_HOST'),
-#         'PORT':os.getenv('DB_PORT')
-#     }
-# }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -168,12 +168,17 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS= True
-CORS_ALLOW_CREDENTIALS=True
+# CORS Configuration
+if DEBUG:
+    # Desarrollo: permitir localhost
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOW_CREDENTIALS = True
+else:
+    # Producción: solo permitir el frontend en Render
+    CORS_ALLOWED_ORIGINS = [
+        "https://django-react-full-stack-front-v1.onrender.com",
+    ]
+    CORS_ALLOW_CREDENTIALS = True
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-CORS_ALLOWED_ORIGINS = [
-    "https://django-react-full-stack-front-v1.onrender.com",
-]
 
