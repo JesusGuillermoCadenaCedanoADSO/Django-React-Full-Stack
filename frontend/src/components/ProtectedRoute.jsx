@@ -6,6 +6,7 @@ function ProtectedRoute({ children }) {
   const [isAuthorized, setIsAuthorized] = useState(null);
 
   useEffect(() => {
+    // 🔹 Verifica tokens al cargar
     const checkAuth = () => {
       const access = localStorage.getItem(ACCESS_TOKEN);
       const refresh = localStorage.getItem(REFRESH_TOKEN);
@@ -18,6 +19,17 @@ function ProtectedRoute({ children }) {
     };
 
     checkAuth();
+
+    // 🔹 Escucha evento emitido por api.js cuando expira o falla el refresh
+    const handleTokenExpired = () => {
+      setIsAuthorized(false);
+    };
+
+    window.addEventListener("tokenExpired", handleTokenExpired);
+
+    return () => {
+      window.removeEventListener("tokenExpired", handleTokenExpired);
+    };
   }, []);
 
   if (isAuthorized === null) {
